@@ -14,7 +14,20 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   User.init({
-    name: DataTypes.STRING
+    email: DataTypes.STRING,
+    password: DataTypes.STRING,
+    pin: DataTypes.INTEGER,
+    imgProfileURL:{
+      type: DataTypes.STRING,
+      get() {
+        const rawValue = this.getDataValue('imgProfileURL');
+        return rawValue ? process.env.BASE_URL + rawValue : null
+      }
+    },
+    name: DataTypes.STRING,
+    role: DataTypes.ENUM('admin', 'mentor', 'user'),
+    isVerify: DataTypes.ENUM('active', 'none'),
+
   }, {
     sequelize,
     modelName: 'User',

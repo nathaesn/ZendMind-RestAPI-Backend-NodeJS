@@ -9,8 +9,31 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      email: {
+        unique: true,
+        type: Sequelize.STRING
+      },
+      password: {
+        type: Sequelize.STRING
+      },
+      pin:{
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
+      imgProfileURL: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
       name: {
         type: Sequelize.STRING
+      },
+      role:{
+        type: Sequelize.ENUM('admin', 'mentor', 'user'),
+        defaultValue: 'user'
+      },
+      isVerify:{
+        type: Sequelize.ENUM('active', 'none'),
+        defaultValue: 'none'
       },
       createdAt: {
         allowNull: false,
