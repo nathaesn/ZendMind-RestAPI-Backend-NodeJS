@@ -12,3 +12,6 @@ router.get('/get', function(req, res){
 
 router.post('/user/register', AuthController.register)
 router.post('/login', AuthController.login)
+router.get('/token', AuthController.tokenUser)
+router.post('/sendVerifyEmail', AuthController.sendVerifyEmail)
+router.get('/verify-email/:token', AuthController.verifyEmail)

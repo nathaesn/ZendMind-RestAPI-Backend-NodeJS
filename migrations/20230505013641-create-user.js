@@ -32,8 +32,11 @@ module.exports = {
         defaultValue: 'user'
       },
       isVerify:{
-        type: Sequelize.ENUM('active', 'none'),
-        defaultValue: 'none'
+        type: Sequelize.ENUM('true', 'false'),
+        defaultValue: 'false'
+      },
+      verifyToken:{
+        type: Sequelize.TEXT
       },
       createdAt: {
         allowNull: false,
