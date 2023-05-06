@@ -25,8 +25,9 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     name: DataTypes.STRING,
+    verifyToken: DataTypes.STRING,
     role: DataTypes.ENUM('admin', 'mentor', 'user'),
-    isVerify: DataTypes.ENUM('active', 'none'),
+    isVerify: DataTypes.ENUM('true', 'false'),
 
   }, {
     sequelize,
