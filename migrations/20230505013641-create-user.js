@@ -16,10 +16,6 @@ module.exports = {
       password: {
         type: Sequelize.STRING
       },
-      pin:{
-        type: Sequelize.INTEGER,
-        allowNull: true,
-      },
       imgProfileURL: {
         type: Sequelize.TEXT,
         allowNull: true,
