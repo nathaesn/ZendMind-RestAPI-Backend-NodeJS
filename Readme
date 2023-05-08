@@ -1,5 +1,6 @@
 // LUPAKAN TITIK KOMA  (;) !!!!!!!!
 
+// JANGAN LUPA .ENV  (FILE ENV UBAH) !!!!!!!!
 
 // GET VALUE FROM .env = {
 //     require('dotenv').config()
