@@ -43,7 +43,7 @@ exports.register = async(req, res) => {
             }
         })
     } catch(error){
-        return responApi.v2respon400(req, res, 'Error');
+        return responApi.v2respon400(req, res, 'Internal Server Error');
     }
 }
 
@@ -92,7 +92,7 @@ exports.login = async(req, res) => {
             return responApi.v2respon400(req, res, 'Email Not Found');
         }
     }catch(error){
-        return responApi.v2respon400(req, res, 'Error');
+        return responApi.v2respon400(req, res, 'Internal Server Error');
     }
 }
 
@@ -118,7 +118,7 @@ exports.tokenUser= async(req, res) =>{
         console.log(decoded)
         return responApi.v2respon200(req, res, decoded.user);
     } catch (err) {
-        return res.status(401).json("Invalid Token");
+        return responApi.v2respon400(req, res, 'Internal Server Error');
     }
 }
 
@@ -154,7 +154,7 @@ exports.sendVerifyEmail = async(req, res) => {
       });
 
     }catch (err) {
-        return res.status(401).json("Invalid Token");
+        return responApi.v2respon400(req, res, 'Internal Server Error');
     }
 }
 
@@ -189,11 +189,55 @@ exports.forgotPassword = async(req, res) => {}
 exports.changeMails = async(req, res) => {}
 
 exports.changeDisplay = async(req, res) => {
-    const { name, gender } = req.body;
+    // const { name, gender } = req.body;
+    let token = req.body.token || req.query.token || req.headers["authorization"];
+
+    // try {
+        const decoded = jwt.verify(token, process.env.TOKEN_KEY);
+        // var order = await mUser.update(
+        //     {
+        //         verifyToken: token
+        //     },
+        //     {
+        //         where: { id: decoded.user.id}
+        //     }
+        //     );
 
 
+        return responApi.v2respon200(req, res, "Sucessfully to update user info");
+    // } catch (error) {
+    //     return responApi.v2respon400(req, res, 'Internal Server Error');
+    // }
     
 
+}
+
+exports.isVerifyPermission = async(req, res, next) => {
+    let token = req.body.token || req.query.token || req.headers["authorization"];
+
+    if (!token) {
+
+        return res.status(403).json("A token is required for authentication");
+    }
+    token = token.replace("Bearer ", "");
+    try {
+        const tokendb = await tokenModels.findOne({ where: { token: token } });
+        if (!tokendb) {
+            return res.status(401).json("Invalid Token");
+        }
+
+        const decoded = jwt.verify(token, process.env.TOKEN_KEY);
+        if (decoded.user.isVerify != "true") {
+            return responApi.v2respon200(req, res, "Please Verify Your Email");
+        }
+
+        res.locals.decodedUser = decoded;
+    } catch (err) {
+        return responApi.v2respon400(req, res, 'Internal Server Error');
+    }
+    
+    // return next();
+    return responApi.v2respon400(req, res, 'Internal Server JAKLdjlkj');
 }
 
 exports.adminPermission = async (req, res, next) => {
@@ -211,13 +255,16 @@ exports.adminPermission = async (req, res, next) => {
         }
 
         const decoded = jwt.verify(token, process.env.TOKEN_KEY);
+        if (decoded.user.isVerify != "true") {
+            return responApi.v2respon200(req, res, "Please Verify Your Email");
+        }
         if (decoded.user.role != "admin") {
-            res.json(respon200('U dont have a access'));
+            return responApi.v2respon200(req, res, "You dont have a access");
         }
 
         res.locals.decodedUser = decoded;
     } catch (err) {
-        return res.status(401).json("Invalid Token");
+        return responApi.v2respon400(req, res, 'Internal Server Error');
     }
 
     return next();
