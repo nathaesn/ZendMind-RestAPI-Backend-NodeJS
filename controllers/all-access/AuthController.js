@@ -184,13 +184,17 @@ exports.verifyEmail = async(req, res) => {
 }
 
 
-exports.forgotPassword = async(req, res) => {
-
-}
+exports.forgotPassword = async(req, res) => {}
 
 exports.changeMails = async(req, res) => {}
 
-exports.changeDisplay = async(req, res) => {}
+exports.changeDisplay = async(req, res) => {
+    const { name, gender } = req.body;
+
+
+    
+
+}
 
 exports.adminPermission = async (req, res, next) => {
     let token = req.body.token || req.query.token || req.headers["authorization"];

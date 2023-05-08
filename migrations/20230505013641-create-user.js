@@ -27,6 +27,10 @@ module.exports = {
         type: Sequelize.ENUM('admin', 'mentor', 'user'),
         defaultValue: 'user'
       },
+      gender:{
+        type: Sequelize.ENUM('Laki-Laki', 'Perempuan'),
+        allowNull: true
+      },
       isVerify:{
         type: Sequelize.ENUM('true', 'false'),
         defaultValue: 'false'
