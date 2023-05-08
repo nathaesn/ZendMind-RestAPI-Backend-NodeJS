@@ -7,9 +7,12 @@ app.use(express.json())
 
 app.get('/', (req, res) => res.send('Welcome to Zendmind Server!!!, this is private server'));
 
+
+
+//Make Variable for route location
 const authRoute = require('./routes/all-access/auth')
 
-//AUTH ROUTES
+//Make Routes
 app.use('/api/auth', authRoute)
 
 

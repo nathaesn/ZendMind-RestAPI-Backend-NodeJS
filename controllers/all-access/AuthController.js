@@ -182,3 +182,12 @@ exports.verifyEmail = async(req, res) => {
     }
   
 }
+
+
+exports.forgotPassword = async(req, res) => {
+
+}
+
+exports.changeMails = async(req, res) => {}
+
+exports.changeDisplay = async(req, res) => {}
