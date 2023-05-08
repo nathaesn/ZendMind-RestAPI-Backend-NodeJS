@@ -12,12 +12,16 @@ app.get('/', (req, res) => res.send('Welcome to Zendmind Server!!!, this is priv
 //Make Variable for route location
 const authRoute = require('./routes/all-access/auth')
 const articleRoutes = require('./routes/all-access/ArticleRoutes');
+const notificationRoutes = require('./routes/all-access/NotificationRoutes');
 
 //Make Routes Authentification
 app.use('/api/auth', authRoute)
 
 //Make Routes Article
 app.use('/api/articles', articleRoutes);
+
+//Make Routes Notification
+app.use('/api/notifications', notificationRoutes);
 
 
 
