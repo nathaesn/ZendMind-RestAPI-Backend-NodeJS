@@ -6,7 +6,7 @@ const AuthController = require('../../controllers/all-access/AuthController');
 
 
 
-router.get('/get', function(req, res){
+router.get('/get', AuthController.adminPermission, function(req, res){
     res.send("Hello")
 })
 

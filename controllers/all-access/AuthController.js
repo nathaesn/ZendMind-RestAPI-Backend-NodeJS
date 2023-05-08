@@ -191,3 +191,30 @@ exports.forgotPassword = async(req, res) => {
 exports.changeMails = async(req, res) => {}
 
 exports.changeDisplay = async(req, res) => {}
+
+exports.adminPermission = async (req, res, next) => {
+    let token = req.body.token || req.query.token || req.headers["authorization"];
+
+    if (!token) {
+
+        return res.status(403).json("A token is required for authentication");
+    }
+    token = token.replace("Bearer ", "");
+    try {
+        const tokendb = await tokenModels.findOne({ where: { token: token } });
+        if (!tokendb) {
+            return res.status(401).json("Invalid Token");
+        }
+
+        const decoded = jwt.verify(token, process.env.TOKEN_KEY);
+        if (decoded.user.role != "admin") {
+            res.json(respon200('U dont have a access'));
+        }
+
+        res.locals.decodedUser = decoded;
+    } catch (err) {
+        return res.status(401).json("Invalid Token");
+    }
+
+    return next();
+}
