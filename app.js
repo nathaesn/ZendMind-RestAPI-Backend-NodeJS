@@ -8,8 +8,8 @@ const bodyParser = require('body-parser');
 const server = http.createServer(app);
 const io = socketIO(server);
 
-const models = require('/models');
-const massage = models.Message;
+const models = require('../ZendMind-RestAPI-Backend-NodeJS/models/');
+const message = models.Message;
 
 app.use(express.json())
 
@@ -38,6 +38,17 @@ app.use('/api/messages', messageRoutes);
 io.on('connection', (socket) => {
   console.log('a user connected');
 
+  message.findAll({ limit: 10, order: [['createdAt', 'ASC']] }).then((chats) => {
+    socket.emit('chats', chats.reverse());
+  });
+
+  // Menangani pengiriman chat baru
+  socket.on('chat', (data) => {
+    message.create(data).then(() => {
+      io.emit('chat', data);
+    });
+  });
+
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });
@@ -49,5 +60,7 @@ io.on('connection', (socket) => {
 });
 
 
-
-app.listen(port, () => console.log(`Successfully to start😱😱😱 : http://127.0.0.1:${port}, Lupakan titik koma`));
+server.listen(3000, () => {
+  console.log('Server is listening on port 3000');
+});
+// app.listen(port, () => console.log(`Successfully to start😱😱😱 : http://127.0.0.1:${port}, Lupakan titik koma`));
