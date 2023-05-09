@@ -22,6 +22,7 @@ const authRoute = require('./routes/all-access/auth')
 const articleRoutes = require('./routes/all-access/ArticleRoutes');
 const notificationRoutes = require('./routes/all-access/NotificationRoutes');
 const messageRoutes = require('./routes/all-access/MessageRoutes');
+const moodRoutes = require('./routes/all-access/MoodRoutes');
 
 //Make Routes Authentification
 app.use('/api/auth', authRoute)
@@ -31,6 +32,9 @@ app.use('/api/articles', articleRoutes);
 
 //Make Routes Notification
 app.use('/api/notifications', notificationRoutes);
+
+//Make Routes Mood
+app.use('/api/moods', moodRoutes);
 
 //Make Routes Message
 app.use('/api/messages', messageRoutes);
