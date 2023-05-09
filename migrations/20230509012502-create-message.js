@@ -1,4 +1,5 @@
 'use strict';
+/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('Messages', {
@@ -9,23 +10,10 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       userId: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'Users',
-          key: 'id',
-          as: 'userId'
-        }
+        type: Sequelize.INTEGER
       },
       to_userId: {
-        type: Sequelize.INTEGER,
-        userId: {
-          type: Sequelize.INTEGER,
-          references: {
-            model: 'Users',
-            key: 'id',
-            as: 'to_userId'
-          }
-        },
+        type: Sequelize.INTEGER
       },
       roomID: {
         type: Sequelize.TEXT,

@@ -8,6 +8,9 @@ const bodyParser = require('body-parser');
 const server = http.createServer(app);
 const io = socketIO(server);
 
+const models = require('/models');
+const massage = models.Message;
+
 app.use(express.json())
 
 app.get('/', (req, res) => res.send('Welcome to Zendmind Server!!!, this is private server'));
@@ -30,7 +33,6 @@ app.use('/api/articles', articleRoutes);
 app.use('/api/notifications', notificationRoutes);
 
 //Make Routes Message
-app.use(bodyParser.json());
 app.use('/api/messages', messageRoutes);
 
 io.on('connection', (socket) => {
