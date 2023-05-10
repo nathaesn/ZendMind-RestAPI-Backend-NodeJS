@@ -19,7 +19,7 @@ exports.create = async(req, res) => {
     const { message, roomID, userId, to_userId } = req.body;
 
 
-    io.to("32").emit('chat',  message );
+    
 
 
 
@@ -32,6 +32,8 @@ exports.create = async(req, res) => {
       status:'New'
     });
 
+
+    io.emit('chat',model );
     
 
 

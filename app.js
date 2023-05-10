@@ -30,16 +30,6 @@ app.use((req, res, next) => {
   next();
 });
 
-io.on('connection', (socket) => {
-  console.log('A user connected');
-  
-  // socket.userID = userID;
-  // const roomId = '35';
-  // socket.join(roomId);
-  // console.log(`User joined room ${roomId}`);
-});
-
-
 app.set('io', io);
 
 //Make Routes Authentification
@@ -57,18 +47,18 @@ app.use('/api/moods', moodRoutes);
 //Make Routes Message
 app.use('/api/messages', messageRoutes);
 
-// io.on('connect', (socket) => {
-//   console.log('a user connected');
+io.on('connect', (socket) => {
+  console.log('a user connected');
 
-//   // Join room
-//   // const roomId = '32';
-//   // socket.join(roomId);
-//   // console.log(`User joined room ${roomId}`);
+  // Join room
+  // const roomId = 'zendmind';
+  // socket.join(roomId);
+  // console.log(`User joined room ${roomId}`);
 
-//   // Emit event to room
-//   // io.to(roomId).emit('chat', 'A new user joined the room');
+  // Emit event to room
+  // io.to(roomId).emit('chat', 'A new user joined the room');
 
-// });
+});
 
 
 
