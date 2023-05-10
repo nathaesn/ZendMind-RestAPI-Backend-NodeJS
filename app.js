@@ -8,7 +8,7 @@ const bodyParser = require('body-parser');
 const server = http.createServer(app);
 const io = socketIO(server);
 
-const models = require('../ZendMind-RestAPI-Backend-NodeJS/models/');
+const models = require('./models/');
 const message = models.Message;
 
 app.use(express.json())
@@ -23,6 +23,14 @@ const articleRoutes = require('./routes/all-access/ArticleRoutes');
 const notificationRoutes = require('./routes/all-access/NotificationRoutes');
 const messageRoutes = require('./routes/all-access/MessageRoutes');
 const moodRoutes = require('./routes/all-access/MoodRoutes');
+
+
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
+
+app.set('io', io);
 
 //Make Routes Authentification
 app.use('/api/auth', authRoute)
@@ -39,28 +47,24 @@ app.use('/api/moods', moodRoutes);
 //Make Routes Message
 app.use('/api/messages', messageRoutes);
 
-io.on('connection', (socket) => {
+io.on('connect', (socket) => {
   console.log('a user connected');
 
-  message.findAll({ limit: 10, order: [['createdAt', 'ASC']] }).then((chats) => {
-    socket.emit('chats', chats.reverse());
-  });
+  // Join room
+  // const roomId = 'zendmind';
+  // socket.join(roomId);
+  // console.log(`User joined room ${roomId}`);
 
-  // Menangani pengiriman chat baru
-  socket.on('chat', (data) => {
-    message.create(data).then(() => {
-      io.emit('chat', data);
-    });
-  });
+  // Emit event to room
+  // io.to(roomId).emit('chat', 'A new user joined the room');
 
-  socket.on('disconnect', () => {
-    console.log('user disconnected');
-  });
+});
 
-  socket.on('chat message', (msg) => {
-    console.log('message: ' + msg);
-    io.emit('chat message', msg);
-  });
+
+
+
+io.on('disconnect', () => {
+  console.log('Disconnected from server');
 });
 
 
