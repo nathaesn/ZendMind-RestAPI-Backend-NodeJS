@@ -2,6 +2,7 @@ const models = require('../../models');
 const responApi = require('../apirespon');
 const massage = models.Message;
 
+
 exports.getAll = async(req, res) => {
   
   // try {
@@ -14,15 +15,33 @@ exports.getAll = async(req, res) => {
 
 exports.create = async(req, res) => {
   // try {
-    const { message, roomID, user_id, to_userId } = req.body;
+    const io = req.app.get('io');
+    const { message, roomID, userId, to_userId } = req.body;
+
+
+    io.to("32").emit('chat',  message );
+
+
+
     const model = await massage.create({ 
-      userId:user_id,
+      userId:userId,
       to_userId:to_userId,
       roomID:roomID,
       message:message,
       type:'Text',
       status:'New'
     });
+
+    
+
+
+    // io.to("32").emit('chat', {
+    //   userId,
+    //   roomID,
+    //   message
+    // });
+
+
     return responApi.v2respon200(req, res, model);
   // } catch (err) {
   //   next(err);
