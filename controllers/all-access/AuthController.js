@@ -5,9 +5,6 @@ const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const responApi = require('../apirespon');
 const nodemailer = require('nodemailer');
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
     service: 'Gmail', // layanan email yang digunakan
@@ -272,59 +269,3 @@ exports.adminPermission = async (req, res, next) => {
 
     return next();
 }
-
-passport.use(
-    new GoogleStrategy(
-      {
-        clientID: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: process.env.GOOGLE_CALLBACK_URL,
-      },
-      (accessToken, refreshToken, profile, done) => {
-        // Melakukan validasi dan pemrosesan lebih lanjut
-        // ...
-  
-        // Contoh:
-        const user = {
-          id: profile.id,
-          email: profile.emails[0].value,
-          name: profile.displayName,
-        };
-        return done(null, user);
-      }
-    )
-  );
-  
-  passport.serializeUser((user, done) => {
-    done(null, user);
-  });
-  
-  passport.deserializeUser((user, done) => {
-    done(null, user);
-  });
-  
-  function authenticate(req, res, next) {
-    passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
-  }
-  
-  function callback(req, res, next) {
-    passport.authenticate('google', { session: false }, (err, user) => {
-      if (err) {
-        return res.sendStatus(500);
-      }
-      if (!user) {
-        return res.sendStatus(401);
-      }
-  
-      // Buat token akses JWT atau sesuai kebutuhan Anda
-      const token = generateAccessToken(user);
-  
-      // Kirim token akses sebagai respons
-      res.json({ token });
-    })(req, res, next);
-  }
-  
-  module.exports = {
-    authenticate,
-    callback,
-  };
