@@ -33,7 +33,7 @@ exports.create = async(req, res) => {
     });
 
 
-    io.emit('chat',model );
+    io.emit(`chat-${roomID}`,model );
     
 
 

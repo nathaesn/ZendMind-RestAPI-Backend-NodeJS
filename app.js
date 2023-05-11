@@ -8,8 +8,7 @@ const bodyParser = require('body-parser');
 const server = http.createServer(app);
 const io = socketIO(server);
 
-const models = require('./models/');
-const message = models.Message;
+
 
 app.use(express.json())
 
