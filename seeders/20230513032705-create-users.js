@@ -7,6 +7,7 @@ module.exports = {
     const hashedPassword = bcryptjs.hashSync("password", 10)
     await queryInterface.bulkInsert('Users', [
       {
+        id: 1,
         name: 'Admin Zendmind',
         email: 'admin@example.com',
         password: hashedPassword,
@@ -17,6 +18,7 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
+        id: 2,
         name: 'Michiko',
         email: 'michiko@example.com',
         password: hashedPassword,
@@ -27,6 +29,7 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
+        id: 3,
         name: 'Zendmind',
         email: 'igne.team@gmail.com',
         password: hashedPassword,
@@ -37,8 +40,20 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
+        id: 4,
         name: 'Kazena',
         email: 'kazena@example.com',
+        password: hashedPassword,
+        role: 'mentor',
+        verifyToken: "",
+        isVerify: "true",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: 5,
+        name: 'Kazena',
+        email: 'kazenakun@example.com',
         password: hashedPassword,
         role: 'mentor',
         verifyToken: "",

@@ -9,6 +9,9 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      role: {
+        type: Sequelize.ENUM('Konselor', 'Mentor'),
+      },
       idUser: {
         unique: true,
         type: Sequelize.INTEGER

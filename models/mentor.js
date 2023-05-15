@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Mentor.init({
     idUser: DataTypes.INTEGER,
+    role: DataTypes.ENUM('Mentor', 'Konselor'),
     username: DataTypes.STRING,
     fee: DataTypes.INTEGER,
     incomeNow: DataTypes.INTEGER,
