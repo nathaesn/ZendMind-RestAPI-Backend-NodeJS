@@ -12,7 +12,11 @@ router.get('/get', AuthController.adminPermission, function(req, res){
 
 router.post('/user/register', AuthController.register)
 router.post('/login', AuthController.login)
+router.get('/user', AuthController.getUser)
 router.get('/token', AuthController.tokenUser)
 router.post('/sendVerifyEmail', AuthController.sendVerifyEmail)
 router.get('/verify-email/:token', AuthController.verifyEmail)
 router.put('/update', AuthController.isVerifyPermission)
+router.put('/update/display', AuthController.updateUserDisplay)
+router.delete('/logout', AuthController.logOut )
+router.get('/checkEmailStatus/:email', AuthController.verifyemailCheck )

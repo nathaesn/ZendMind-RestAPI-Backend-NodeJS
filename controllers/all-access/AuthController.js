@@ -107,7 +107,7 @@ exports.tokenUser= async(req, res) =>{
     try {
         const tokendb = await models.Token.findOne({ where: { token: token } });
         if (!tokendb) {
-            return res.status(401).json("Invalid Token");
+            return responApi.v2respon400(req, res, "Invalid Token");
         }
 
         const decoded = jwt.verify(token, process.env.TOKEN_KEY);
@@ -223,7 +223,7 @@ exports.isVerifyPermission = async(req, res, next) => {
     try {
         const tokendb = await tokenModels.findOne({ where: { token: token } });
         if (!tokendb) {
-            return res.status(401).json("Invalid Token");
+            return responApi.v2respon400(req, res, "Invalid Token");
         }
 
         const decoded = jwt.verify(token, process.env.TOKEN_KEY);
@@ -251,7 +251,7 @@ exports.adminPermission = async (req, res, next) => {
     try {
         const tokendb = await tokenModels.findOne({ where: { token: token } });
         if (!tokendb) {
-            return res.status(401).json("Invalid Token");
+            return responApi.v2respon400(req, res, "Invalid Token");
         }
 
         const decoded = jwt.verify(token, process.env.TOKEN_KEY);
@@ -268,4 +268,119 @@ exports.adminPermission = async (req, res, next) => {
     }
 
     return next();
+}
+
+exports.logOut = async(req, res, next) => {
+    let token = req.body.token || req.query.token || req.headers["authorization"];
+    if (!token) {
+        return res.status(403).json("A token is required for authentication");
+    }
+    token = token.replace("Bearer ", "");
+    try {
+
+        const tokendb = await tokenModels.findOne({ where: { token: token } });
+        if (!tokendb) {
+            return responApi.v2respon400(req, res, "Invalid Token");
+        } else{
+            tokenModels.destroy({
+                where: {
+                  token: token,
+                },
+              }).then((rowsDeleted) => {
+                return responApi.v2respon200(req, res, "Succesfully to logout");
+              })
+              .catch((error) => {
+                return responApi.v2respon400(req, res, "Failed to make a request");
+              });
+        }
+
+        
+    } catch (error) {
+        return responApi.v2respon400(req, res, 'Internal Server Error');
+    }
+
+}
+exports.getUser = async(req, res, next) => {
+    let token = req.body.token || req.query.token || req.headers["authorization"];
+    if (!token) {
+        return res.status(403).json("A token is required for authentication");
+    }
+    token = token.replace("Bearer ", "");
+    try {
+
+        const tokendb = await tokenModels.findOne({ where: { token: token } });
+        if (!tokendb) {
+            return responApi.v2respon400(req, res, "Invalid Token");
+        } else{
+            const decoded = jwt.verify(token, process.env.TOKEN_KEY);
+            mUser.findOne({
+                where: {
+                  id: decoded.user.id,
+                },
+                attributes: { exclude: ['password'] },
+              }).then((user) => {
+                if (user) {
+                    return responApi.v2respon200(req, res, user);
+                } else {
+                    return responApi.v2respon400(req, res, "Empty User");
+                }
+              })
+              .catch((error) => {
+                return responApi.v2respon400(req, res, "Failed to make a request");
+              });
+        }
+
+        
+    } catch (error) {
+        return responApi.v2respon400(req, res, 'Internal Server Error');
+    }
+
+}
+exports.updateUserDisplay = async(req, res, next) => {
+    let token = req.body.token || req.query.token || req.headers["authorization"];
+    const {name} = req.body
+    if (!token) {
+        return res.status(403).json("A token is required for authentication");
+    }
+    token = token.replace("Bearer ", "");
+    try {
+
+        const tokendb = await tokenModels.findOne({ where: { token: token } });
+        if (!tokendb) {
+            return responApi.v2respon400(req, res, "Invalid Token");
+        } else{
+            const decoded = jwt.verify(token, process.env.TOKEN_KEY);
+            mUser.update(
+                {
+                    name: name
+                }, 
+                {
+                where: {
+                  id: decoded.user.id,
+                }})
+
+                return responApi.v2respon200(req, res, "Update Sucsessfully");
+        }
+
+        
+    } catch (error) {
+        return responApi.v2respon400(req, res, 'Internal Server Error');
+    }
+
+}
+
+exports.verifyemailCheck = async(req, res) => {
+    const {email} = req.params
+
+    const user = await mUser.findOne({ 
+        where: { email: email },
+        attributes: [ 'isVerify' ]
+    });
+
+    if(user.isVerify == "true"){
+        return responApi.v2respon200(req, res, "Active Email");
+    } else{
+        return responApi.v2respon400(req, res, 'Email Not Verify');
+    }
+
 }

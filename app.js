@@ -9,6 +9,8 @@ const server = http.createServer(app);
 const io = socketIO(server);
 
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.json())
 
