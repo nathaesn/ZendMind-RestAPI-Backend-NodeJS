@@ -12,8 +12,20 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      body: {
+      subtitle: {
         type: Sequelize.TEXT,
+        allowNull: false
+      },
+      bannerURL: {
+        type: Sequelize.TEXT,
+        allowNull: false
+      },
+      content: {
+        type: Sequelize.TEXT,
+        allowNull: false
+      },
+      viewsCount: {
+        type: Sequelize.INTEGER,
         allowNull: false
       },
       createdAt: {

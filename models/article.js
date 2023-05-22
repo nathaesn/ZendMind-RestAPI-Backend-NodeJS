@@ -16,7 +16,10 @@ module.exports = (sequelize, DataTypes) => {
   }
   Article.init({
     title: DataTypes.STRING,
-    body: DataTypes.TEXT
+    subtitle: DataTypes.TEXT,
+    viewsCount: DataTypes.INTEGER,
+    bannerURL: DataTypes.TEXT,
+    content: DataTypes.TEXT,
   }, {
     sequelize,
     modelName: 'Article',
