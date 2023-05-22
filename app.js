@@ -7,6 +7,7 @@ const socketIO = require('socket.io');
 const bodyParser = require('body-parser');
 const server = http.createServer(app);
 const io = socketIO(server);
+const path = require('path');
 
 
 app.use(bodyParser.json());
@@ -48,6 +49,22 @@ app.use('/api/moods', moodRoutes);
 //Make Routes Message
 app.use('/api/messages', messageRoutes);
 
+
+const multer  = require('multer'); 
+
+app.use(express.static('public'));
+const uploadDir = '/img/';
+const storage = multer.diskStorage({
+    destination: "./public"+uploadDir,
+    filename: function (req, file, cb) {
+      crypto.pseudoRandomBytes(16, function (err, raw) {
+        if (err) return cb(err)  
+
+        cb(null, raw.toString('hex') + path.extname(file.originalname))
+      })
+    }
+})
+
 io.on('connect', (socket) => {
   console.log('a user connected');
 
@@ -69,7 +86,6 @@ io.on('disconnect', () => {
 });
 
 
-server.listen(3000, () => {
-  console.log('Server is listening on port 3000');
-});
+
+server.listen(port, () => console.log(`Successfully to start😱😱😱 : http://127.0.0.1:${port}, Lupakan titik koma`));
 // app.listen(port, () => console.log(`Successfully to start😱😱😱 : http://127.0.0.1:${port}, Lupakan titik koma`));

@@ -1,10 +1,11 @@
 // articleController.js
 const { Article } = require('../../models');
+const responApi = require('../apirespon');
 
 exports.getAllArticles = async (req, res) => {
   try {
     const articles = await Article.findAll();
-    res.json(articles);
+    return responApi.v2respon200(req, res, articles);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });

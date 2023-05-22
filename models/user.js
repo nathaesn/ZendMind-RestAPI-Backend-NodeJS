@@ -18,10 +18,6 @@ module.exports = (sequelize, DataTypes) => {
     password: DataTypes.STRING,
     imgProfileURL:{
       type: DataTypes.STRING,
-      get() {
-        const rawValue = this.getDataValue('imgProfileURL');
-        return rawValue ? process.env.BASE_URL + rawValue : null
-      }
     },
     name: DataTypes.STRING,
     verifyToken: DataTypes.STRING,

@@ -5,6 +5,8 @@ const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const responApi = require('../apirespon');
 const nodemailer = require('nodemailer');
+const fs = require('fs');
+const path = require('path');
 
 const transporter = nodemailer.createTransport({
     service: 'Gmail', // layanan email yang digunakan
@@ -13,6 +15,13 @@ const transporter = nodemailer.createTransport({
       pass: process.env.PASSWORD // password email Anda
     }
   });
+
+  const saveBase64Image = (base64String, imagePath) => {
+    const base64Data = base64String.replace(/^data:image\/\w+;base64,/, '');
+    const imageBuffer = Buffer.from(base64Data, 'base64');
+  
+    fs.writeFileSync(imagePath, imageBuffer);
+  };
 
 
 exports.register = async(req, res) => {
@@ -176,6 +185,8 @@ exports.verifyEmail = async(req, res) => {
             }
         );
 
+        io.emit(`verify-${decodedToken.email}`, 'refresh' );
+
       res.send("Email telah berhasil diverifikasi");
     } catch (error) {
       res.send('Token tidak valid atau telah kadaluarsa.');
@@ -188,23 +199,62 @@ exports.forgotPassword = async(req, res) => {}
 
 exports.changeMails = async(req, res) => {}
 
-exports.changeDisplay = async(req, res) => {
-    // const { name, gender } = req.body;
+
+exports.uploadImg = async (req, res) => {
+    const { img, imgNamed } = req.body;
+
+    const timestamp = Date.now();
+
+
+    // const base64Image = img.split(';base64,').pop();
+    // const imageBuffer = Buffer.from(base64Image, 'base64');
+    // const imagePath = process.env.APP_URL + `Assets/${timestamp+imgNamed}.png`;
+
+    const imagePath = path.resolve(`public/img/users`, `${timestamp+imgNamed}.png`);
+    const imageUrl = process.env.APP_URL+`img/users/${timestamp+imgNamed}.png`;
+
+
+    saveBase64Image(img, imagePath);
+
+    return responApi.v2respon200(req, res, imageUrl);
+}
+
+exports.uploadImgProfile = async(req, res) => {
+    const { img, imgNamed } = req.body;
+   
     let token = req.body.token || req.query.token || req.headers["authorization"];
 
+    if (!token) {
+        return res.status(403).json("A token is required for authentication");
+    }
+    token = token.replace("Bearer ", "");
+
     // try {
-        const decoded = jwt.verify(token, process.env.TOKEN_KEY);
-        // var order = await mUser.update(
-        //     {
-        //         verifyToken: token
-        //     },
-        //     {
-        //         where: { id: decoded.user.id}
-        //     }
-        //     );
+        const tokendb = await tokenModels.findOne({ where: { token: token } });
+        if (!tokendb) {
+            return responApi.v2respon400(req, res, "Invalid Token");
+        } else{
+            const timestamp = Date.now();
 
-
-        return responApi.v2respon200(req, res, "Sucessfully to update user info");
+            const imagePath = path.resolve(`public/img/users-profile`, `${timestamp+imgNamed}.png`);
+            const imageUrl = process.env.APP_URL+`img/users-profile/${timestamp+imgNamed}.png`;
+    
+    
+            saveBase64Image(img, imagePath);
+            const decoded = jwt.verify(token, process.env.TOKEN_KEY);
+            var order = await mUser.update(
+                {
+                    imgProfileURL: imageUrl
+                },
+                {
+                    where: { id: decoded.user.id}
+                }
+                );
+    
+            return responApi.v2respon200(req, res, "Sucessfully to update profile");
+        }
+        
+        
     // } catch (error) {
     //     return responApi.v2respon400(req, res, 'Internal Server Error');
     // }
