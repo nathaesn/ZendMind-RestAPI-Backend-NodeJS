@@ -237,7 +237,7 @@ exports.uploadImgProfile = async(req, res) => {
             const timestamp = Date.now();
 
             const imagePath = path.resolve(`public/img/users-profile`, `${timestamp+imgNamed}.png`);
-            const imageUrl = process.env.APP_URL+`img/users-profile/${timestamp+imgNamed}.png`;
+            const imageUrl = `img/users-profile/${timestamp+imgNamed}.png`;
     
     
             saveBase64Image(img, imagePath);

@@ -69,12 +69,12 @@ io.on('connect', (socket) => {
   console.log('a user connected');
 
   // Join room
-  // const roomId = 'zendmind';
-  // socket.join(roomId);
-  // console.log(`User joined room ${roomId}`);
+  const roomId = 'zendmind';
+  socket.join(roomId);
+  console.log(`User joined room ${roomId}`);
 
   // Emit event to room
-  // io.to(roomId).emit('chat', 'A new user joined the room');
+  io.to(roomId).emit('chat', 'A new user joined the room');
 
 });
 

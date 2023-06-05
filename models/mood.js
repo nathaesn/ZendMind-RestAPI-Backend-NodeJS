@@ -17,7 +17,15 @@ module.exports = (sequelize, DataTypes) => {
     mood: {
       type: DataTypes.ENUM('happy', 'normal', 'sad', 'angry'),
       allowNull: false
-    }
+    },
+    idUser: {
+      allowNull: false,
+      type: DataTypes.INTEGER
+    },
+    monthYear: {
+      type: DataTypes.DATEONLY,
+      defaultValue: DataTypes.NOW,
+    },
   }, {
     sequelize,
     modelName: 'Mood',
