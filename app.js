@@ -15,7 +15,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.json())
 
-app.get('/', (req, res) => res.send('Welcome to Zendmind Server!!!, this is private server'));
+app.get('/', (req, res) => {
+  const filePath = path.join(__dirname, 'public/html', 'landingPage/index.html');
+  res.sendFile(filePath);
+});
 
 
 
