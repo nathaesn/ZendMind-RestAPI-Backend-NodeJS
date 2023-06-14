@@ -1,7 +1,8 @@
 const models = require('../../models');
 const responApi = require('../apirespon');
 const massage = models.Message;
-
+const ai = models.ResponseAi;
+const { Op } = require('sequelize');
 
 exports.getAll = async(req, res) => {
   
@@ -45,6 +46,34 @@ exports.create = async(req, res) => {
 
 
     return responApi.v2respon200(req, res, model);
+  // } catch (err) {
+  //   next(err);
+  // }
+};
+exports.createAi = async(req, res) => {
+  // try {
+    const { message } = req.body;
+
+    const responseData = await ai.findOne({
+      where: {
+        key: {
+          [Op.like]: `%${message}%`,
+        },
+      },
+    });
+    let response = "MKSD LU APAAN SI, GW CUMA AI JANGAN TANYA YANG GA JELAS YA!!!"
+    if(responseData != null){
+
+      const randomIndex = Math.floor(Math.random() * responseData['response'].length);
+      response = responseData['response'][randomIndex];
+    }
+
+  
+
+    return responApi.v2respon200(req, res, response);
+
+    
+
   // } catch (err) {
   //   next(err);
   // }

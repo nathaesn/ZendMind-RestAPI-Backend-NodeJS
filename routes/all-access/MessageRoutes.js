@@ -8,5 +8,6 @@ const messagesController = require('../../controllers/all-access/MessageControll
 
 router.get('/', messagesController.getAll);
 router.post('/', messagesController.create);
+router.get('/ai', messagesController.createAi);
 
 module.exports = router;
