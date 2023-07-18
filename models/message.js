@@ -15,7 +15,6 @@ module.exports = (sequelize, DataTypes) => {
   }
   Message.init({
     userId: DataTypes.INTEGER,
-    to_userId: DataTypes.INTEGER,
     roomID: DataTypes.TEXT,
     message: DataTypes.STRING,
     type: DataTypes.ENUM('Text', 'Img', 'Media'),

@@ -29,6 +29,6 @@
     "nodemailer": "^6.9.1",
     "sequelize": "^6.31.1",
     "socket.io": "^4.5.1",
-    "xendit-node": "^1.21.11"
+    "xendit-node": "^1.21.16"
   }
 }

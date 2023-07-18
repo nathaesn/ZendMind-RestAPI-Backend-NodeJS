@@ -37,7 +37,7 @@ app.use((req, res, next) => {
 
 app.set('io', io);
 
-//Make Routes Authentification
+//Make Routes Authentication
 app.use('/api/auth', authRoute)
 
 //Make Routes Article
@@ -51,6 +51,12 @@ app.use('/api/moods', moodRoutes);
 
 //Make Routes Message
 app.use('/api/messages', messageRoutes);
+
+//Make Routes Consultation
+app.use('/api/consultation', messageRoutes);
+
+//Make Routes Mentor
+app.use('/api/mentor', messageRoutes);
 
 
 const multer  = require('multer'); 

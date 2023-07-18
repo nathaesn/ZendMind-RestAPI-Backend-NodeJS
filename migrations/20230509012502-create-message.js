@@ -12,9 +12,6 @@ module.exports = {
       userId: {
         type: Sequelize.INTEGER
       },
-      to_userId: {
-        type: Sequelize.INTEGER
-      },
       roomID: {
         type: Sequelize.TEXT,
       },

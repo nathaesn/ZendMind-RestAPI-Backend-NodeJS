@@ -6,7 +6,8 @@ module.exports = router
 const { body, validationResult } = require('express-validator');
 const messagesController = require('../../controllers/all-access/MessageController');
 
-router.get('/', messagesController.getAll);
+// router.get('/listroom', messagesController.getlistroom);
+router.get('/:roomID', messagesController.getAll);
 router.post('/', messagesController.create);
 router.get('/ai', messagesController.createAi);
 
