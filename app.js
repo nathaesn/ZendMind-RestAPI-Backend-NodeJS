@@ -27,11 +27,15 @@ const authRoute = require('./routes/all-access/auth')
 const articleRoutes = require('./routes/all-access/ArticleRoutes');
 const notificationRoutes = require('./routes/all-access/NotificationRoutes');
 const messageRoutes = require('./routes/all-access/MessageRoutes');
+const mentorProfileRoute = require('./routes/mentor/mentorProfile');
 const moodRoutes = require('./routes/all-access/MoodRoutes');
 
 
 app.use((req, res, next) => {
   req.io = io;
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   next();
 });
 
@@ -56,7 +60,10 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/consultation', messageRoutes);
 
 //Make Routes Mentor
-app.use('/api/mentor', messageRoutes);
+app.use('/api/mentor/profile', mentorProfileRoute);
+
+//Make Routes Admin
+app.use('/api/admin/mentor', mentorProfileRoute);
 
 
 const multer  = require('multer'); 

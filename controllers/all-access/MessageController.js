@@ -7,6 +7,7 @@ const { Op } = require('sequelize');
 const tokenModels = models.Token
 const jwt = require('jsonwebtoken')
 
+
 exports.getAll = async(req, res) => {
   
   // try {

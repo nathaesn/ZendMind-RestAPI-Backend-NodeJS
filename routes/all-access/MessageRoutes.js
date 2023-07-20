@@ -12,3 +12,5 @@ router.post('/', messagesController.create);
 router.get('/ai', messagesController.createAi);
 
 module.exports = router;
+
+

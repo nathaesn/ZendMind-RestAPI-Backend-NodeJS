@@ -26,5 +26,11 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Mentor',
   });
+  // Mentor.associate = function (models) {
+  //   Mentor.belongsTo(models.User, {
+  //     foreignKey: 'idUser',
+  //     as: 'User'
+  //   })
+  // }
   return Mentor;
 };
