@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const port = 3000
+const port = 3006
 
 const http = require('http');
 const socketIO = require('socket.io');
@@ -8,12 +8,19 @@ const bodyParser = require('body-parser');
 const server = http.createServer(app);
 const io = socketIO(server);
 const path = require('path');
+const cors = require('cors');
 
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.json())
+
+const corsOptions = {
+  origin: ['http://localhost:3006', 'http://127.0.0.1:3006', 'https://apizendmind.igniteteam.id'],
+};
+
+app.use(cors(corsOptions));
 
 app.get('/', (req, res) => {
   const filePath = path.join(__dirname, 'public/html', 'landingPage/index.html');
@@ -27,15 +34,13 @@ const authRoute = require('./routes/all-access/auth')
 const articleRoutes = require('./routes/all-access/ArticleRoutes');
 const notificationRoutes = require('./routes/all-access/NotificationRoutes');
 const messageRoutes = require('./routes/all-access/MessageRoutes');
-const mentorProfileRoute = require('./routes/mentor/mentorProfile');
+const handleUserAdmin = require('./routes/admin/mentorHandle');
+const handleMentorAdmin = require('./routes/admin/userHandle');
 const moodRoutes = require('./routes/all-access/MoodRoutes');
 
 
 app.use((req, res, next) => {
   req.io = io;
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   next();
 });
 
@@ -60,10 +65,13 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/consultation', messageRoutes);
 
 //Make Routes Mentor
-app.use('/api/mentor/profile', mentorProfileRoute);
+app.use('/api/mentor', messageRoutes);
 
-//Make Routes Admin
-app.use('/api/admin/mentor', mentorProfileRoute);
+//Make Routes Admin For Handle User
+app.use('/api/admin/user', messageRoutes);
+
+//Make Routes Admin For Handle Mentor
+app.use('/api/admin/mentor', messageRoutes);
 
 
 const multer  = require('multer'); 

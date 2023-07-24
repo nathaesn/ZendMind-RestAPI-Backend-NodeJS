@@ -386,6 +386,58 @@ exports.getUser = async(req, res, next) => {
     }
 
 }
+exports.allUser = async(req, res, next) => {
+ 
+    try {
+
+        mUser.findAll({
+            where: {
+                role: 'user',
+            },
+            attributes: { exclude: ['password'] },
+          }).then((user) => {
+            if (user) {
+                return responApi.v2respon200(req, res, user);
+            } else {
+                return responApi.v2respon400(req, res, "Empty User");
+            }
+          })
+          .catch((error) => {
+            return responApi.v2respon400(req, res, "Failed to make a request");
+          });
+
+        
+    } catch (error) {
+        return responApi.v2respon400(req, res, 'Internal Server Error');
+    }
+
+}
+exports.allMentor = async(req, res, next) => {
+ 
+    try {
+
+        mUser.findAll({
+            where: {
+                role: 'mentor',
+            },
+            attributes: { exclude: ['password'] },
+          }).then((user) => {
+            if (user) {
+                return responApi.v2respon200(req, res, user);
+            } else {
+                return responApi.v2respon400(req, res, "Empty User");
+            }
+          })
+          .catch((error) => {
+            return responApi.v2respon400(req, res, "Failed to make a request");
+          });
+
+        
+    } catch (error) {
+        return responApi.v2respon400(req, res, 'Internal Server Error');
+    }
+
+}
 exports.updateUserDisplay = async(req, res, next) => {
     let token = req.body.token || req.query.token || req.headers["authorization"];
     const {name} = req.body
