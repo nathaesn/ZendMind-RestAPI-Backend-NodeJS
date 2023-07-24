@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const port = 3006
+const port = 4200
 
 const http = require('http');
 const socketIO = require('socket.io');
@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json())
 
 const corsOptions = {
-  origin: ['http://localhost:3006', 'http://127.0.0.1:3006', 'https://apizendmind.igniteteam.id'],
+  origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://apizendmind.igniteteam.id'],
 };
 
 app.use(cors(corsOptions));
@@ -34,6 +34,7 @@ const authRoute = require('./routes/all-access/auth')
 const articleRoutes = require('./routes/all-access/ArticleRoutes');
 const notificationRoutes = require('./routes/all-access/NotificationRoutes');
 const messageRoutes = require('./routes/all-access/MessageRoutes');
+const mentorRoutes = require('./routes/all-access/mentor');
 const handleUserAdmin = require('./routes/admin/mentorHandle');
 const handleMentorAdmin = require('./routes/admin/userHandle');
 const moodRoutes = require('./routes/all-access/MoodRoutes');
@@ -65,7 +66,7 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/consultation', messageRoutes);
 
 //Make Routes Mentor
-app.use('/api/mentor', messageRoutes);
+app.use('/api/mentor', mentorRoutes);
 
 //Make Routes Admin For Handle User
 app.use('/api/admin/user', messageRoutes);

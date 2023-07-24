@@ -26,11 +26,15 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Mentor',
   });
-  // Mentor.associate = function (models) {
-  //   Mentor.belongsTo(models.User, {
-  //     foreignKey: 'idUser',
-  //     as: 'User'
-  //   })
-  // }
+  Mentor.associate = function (models) {
+    Mentor.belongsTo(models.User, {
+      foreignKey: 'idUser',
+      as: 'User'
+    }),
+    Mentor.hasMany(models.ScheduleMentor, {
+      foreignKey: 'id_mentor',
+      as: 'ScheduleMentor'
+    })
+  }
   return Mentor;
 };

@@ -22,48 +22,15 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'ListRoom',
   });
+  ListRoom.associate = function (models) {
+    ListRoom.belongsTo(models.User, {
+      foreignKey: 'id_SecondUser',
+      as: 'SecondUser'
+    }),
+    ListRoom.belongsTo(models.Message, {
+      foreignKey: 'id_lastChat',
+      as: 'Message'
+    })
+  }
   return ListRoom;
 };
-
-
-// class ArticleBloc extends Bloc<ArticleEvent, ArticleState>{
-//   ArticleBloc() : super(ArticleInitial()){
-//     on<GetArticleEvent>((event, emit)async{
-//       emit(ArticleLoading());
-//       final response = await http.get(Uri.parse(
-//         'http:url'
-//       ));
-//       emit(ArticleSuccess(articles: articlesFromJson(response.body)));
-//     })
-//   }
-// }
-
-
-// BlocBuilder<ArticleBloc, ArticleState>(
-//   builder: (context, state) {
-//     if (state is ArticleLoading) {
-//       return Center(
-//         child: CircularProgressIndicator(),
-//       );
-//     } else if (state is ArticleSuccess) {
-//       final articles = state.articles;
-
-//       return ListView.builder(
-//         itemCount: articles.length,
-//         itemBuilder: (context, index) {
-//           final article = articles[index];
-
-//           //return Listtile diubah jadi BeritaCard
-//           return ListTile(
-//             title: Text(article.title),
-//             subtitle: Text(article.author),
-//           );
-//         },
-//       );
-//     } else {
-//       return Center(
-//         child: Text('Failed to fetch articles'),
-//       );
-//     }
-//   },
-// ),

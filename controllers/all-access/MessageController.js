@@ -8,6 +8,44 @@ const tokenModels = models.Token
 const jwt = require('jsonwebtoken')
 
 
+exports.getListRoom = async(req, res) => {
+
+  let token = req.body.token || req.query.token || req.headers["authorization"];
+  // const {name} = req.body
+  if (!token) {
+      return res.status(403).json("A token is required for authentication");
+  }
+  token = token.replace("Bearer ", "");
+
+  // try {
+    const decoded = jwt.verify(token, process.env.TOKEN_KEY);
+    const io = req.app.get('io');
+    const { message, roomID, id_SecondUser } = req.body;
+
+    const tokendb = await tokenModels.findOne({ where: { token: token } });
+    if (!tokendb) {
+      return responApi.v2respon400(req, res, "Invalid Token");
+    } 
+
+  let messages = await listroom.findAll({
+    where: { id_user: decoded.user.id},
+    include:[
+      {
+          model: models.User,
+          as: 'SecondUser',
+          attributes: { exclude: ['password'] },
+      },
+      {
+          model: models.Message,
+          as: 'Message',
+      },
+     
+  ],
+  });
+  return responApi.v2respon200(req, res, messages);
+}
+
+
 exports.getAll = async(req, res) => {
   
   // try {
@@ -58,11 +96,64 @@ exports.create = async(req, res) => {
       status:'New'
     });
     
-    await listroom.create({ 
-      id_user:decoded.user.id,
-      id_SecondUser: id_SecondUser,
-      id_lastChat:model.id,
-    });
+    var listroomUser = await listroom.findOne({
+      where:{
+        id_user:decoded.user.id,
+        id_SecondUser:id_SecondUser
+      }
+    })
+
+
+    
+    var listroomSecUser = await listroom.findOne({
+      where:{
+        id_user:id_SecondUser,
+        id_SecondUser:decoded.user.id
+      }
+    })
+
+    // Update the listroom for the user
+    if (listroomUser != null) {
+      await listroom.update(
+        { id_lastChat: model.id },
+        {
+          where: {
+            id_user:decoded.user.id,
+            id_SecondUser:id_SecondUser
+          }
+        }
+      );
+    } else {
+      await listroom.create({
+        id_user: decoded.user.id,
+        id_SecondUser: id_SecondUser,
+        id_lastChat: model.id,
+      });
+      
+    }
+
+    // Update the listroom for the second user
+    if (listroomSecUser != null) {
+      await listroom.update(
+        { id_lastChat: model.id },
+        {
+          where: {
+            id_user:id_SecondUser,
+            id_SecondUser:decoded.user.id
+          }
+        }
+      );
+    } else {
+      await listroom.create({
+        id_user: id_SecondUser,
+        id_SecondUser: decoded.user.id,
+        id_lastChat: model.id,
+      });
+      
+    }
+    
+    
+   
 
 
     io.emit(`chat-${roomID}`,model );
