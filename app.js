@@ -35,6 +35,7 @@ const articleRoutes = require('./routes/all-access/ArticleRoutes');
 const notificationRoutes = require('./routes/all-access/NotificationRoutes');
 const messageRoutes = require('./routes/all-access/MessageRoutes');
 const mentorRoutes = require('./routes/all-access/mentor');
+const mentorProfileRoutes = require('./routes/mentor/mentorProfile');
 const handleUserAdmin = require('./routes/admin/mentorHandle');
 const handleMentorAdmin = require('./routes/admin/userHandle');
 const moodRoutes = require('./routes/all-access/MoodRoutes');
@@ -67,6 +68,7 @@ app.use('/api/consultation', messageRoutes);
 
 //Make Routes Mentor
 app.use('/api/mentor', mentorRoutes);
+app.use('/api/mentor/profile', mentorProfileRoutes);
 
 //Make Routes Admin For Handle User
 app.use('/api/admin/user', messageRoutes);

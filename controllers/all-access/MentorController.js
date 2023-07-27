@@ -230,6 +230,42 @@ exports.getbook= async(req, res, next) => {
     }
 
 }
+exports.getbookall= async(req, res, next) => {
+ 
+    try {
+       
+        mMentoring.findAll({
+            include:[
+                {
+                    model: models.Mentor,
+                    as: 'Mentor',
+                    include:[
+                        {
+                            model: models.User,
+                            as: 'User',
+                            attributes: { exclude: ['password'] },
+                        }
+                    ],
+                },
+               
+            ],
+          }).then((user) => {
+            if (user) {
+                return responApi.v2respon200(req, res, user);
+            } else {
+                return responApi.v2respon400(req, res, "Empty Data");
+            }
+          })
+          .catch((error) => {
+            return responApi.v2respon400(req, res, "Failed to make a request");
+          });
+
+        
+    } catch (error) {
+        return responApi.v2respon400(req, res, 'Internal Server Error');
+    }
+
+}
 
 const transporter = nodemailer.createTransport({
     service: 'Gmail', // layanan email yang digunakan

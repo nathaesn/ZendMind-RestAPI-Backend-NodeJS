@@ -6,3 +6,4 @@ const MentorProfileController = require('../../controllers/mentor/MentorProfileC
 
 
 router.get('/get', MentorProfileController.getProfile)
+router.get('/get/schedule', MentorProfileController.getProfile)
