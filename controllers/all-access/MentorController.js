@@ -313,7 +313,7 @@ exports.createbook= async(req, res, next) => {
             date_mentoring:date_mentoring["date"],
             time_mentoring:time_mentoring["time"],
             notes: "wkwkw",
-            status: "Finished"
+            status: "Pending"
           });
 
           $date_mntr =date_mentoring["date"];
