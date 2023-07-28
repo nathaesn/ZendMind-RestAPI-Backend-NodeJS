@@ -79,10 +79,18 @@ exports.getbookAll= async(req, res, next) => {
                     } 
 
                     const todayDate = new Date().toISOString().split('T')[0];
+
+                    const mentordata = await mMentor.findOne({
+                        where: {
+                            idUser: decoded.user.id
+                        }
+                    })
+
+                    console.log('Data : '+mentordata['id'])
             
                     mMentoring.findAll({
                         where: {
-                            id_user: decoded.user.id,
+                            id_mentor: mentordata["id"],
                             date_mentoring: {
                                 [Op.gte]: todayDate
                             },
