@@ -1,10 +1,18 @@
 const models = require('../../models');
-// const Mood = models.Mood
-const { Op } = require('sequelize');
-const responApi = require('../apirespon');
-const tokenModels = models.Token
-const jwt = require('jsonwebtoken')
 const mUser = models.User
+const mMentor = models.Mentor
+const mTimeSchedule = models.TimeSchedule
+const mSchedule = models.ScheduleMentor
+const mMentoring = models.Mentoring
+const tokenModels = models.Token
+const bcryptjs = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+const responApi = require('../apirespon');
+const nodemailer = require('nodemailer');
+const fs = require('fs');
+const path = require('path');
+const { Op } = require('sequelize');
+const { use } = require('../../routes/all-access/auth');
 
 
 exports.getProfile = async(req, res) => {
@@ -29,7 +37,14 @@ exports.getProfile = async(req, res) => {
                 include:[
                     {
                         model: models.Mentor,
-                        as: 'MentorProfile'
+                        as: 'MentorProfile',
+                        include:[
+                            {
+                                model: models.ScheduleMentor,
+                                as: 'ScheduleMentor',
+                            },
+                        ],
+
                     },
                 ],  
                 attributes: { exclude: ['password'] },
@@ -39,9 +54,71 @@ exports.getProfile = async(req, res) => {
                 } else {
                     return responApi.v2respon400(req, res, "Empty User");
                 }
-              })
+              })}
             //   .catch((error) => {
             //     return responApi.v2respon400(req, res, "Failed to make a request");
             //   });
 
-}
+
+
+exports.getbookAll= async(req, res, next) => {
+ 
+                let token = req.body.token || req.query.token || req.headers["authorization"];
+                // const {name} = req.body
+                if (!token) {
+                    return res.status(403).json("A token is required for authentication");
+                }
+                token = token.replace("Bearer ", "");
+             
+                // try {
+                    const decoded = jwt.verify(token, process.env.TOKEN_KEY);
+            
+                    const tokendb = await tokenModels.findOne({ where: { token: token } });
+                    if (!tokendb) {
+                      return responApi.v2respon400(req, res, "Invalid Token");
+                    } 
+            
+                    mMentoring.findAll({
+                        where: {
+                            id_user: decoded.user.id,
+                            fee: {
+                                [Op.lte]: 0,
+                              },
+                        },
+                        include:[
+                            {
+                                model: models.User,
+                                as: 'User',
+                                attributes: { exclude: ['password'] },
+                            },
+                            {
+                                model: models.Mentor,
+                                as: 'Mentor',
+                                include:[
+                                    {
+                                        model: models.User,
+                                        as: 'User',
+                                        attributes: { exclude: ['password'] },
+                                    }
+                                ],
+                            },
+                           
+                        ],
+                      }).then((user) => {
+                        if (user) {
+                            return responApi.v2respon200(req, res, user);
+                        } else {
+                            return responApi.v2respon400(req, res, "Empty Data");
+                        }
+                      })
+                      .catch((error) => {
+                        return responApi.v2respon400(req, res, "Failed to make a request");
+                      });
+            
+                    
+                // } catch (error) {
+                //     return responApi.v2respon400(req, res, 'Internal Server Error');
+                // }
+            
+            }        
+        

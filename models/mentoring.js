@@ -30,6 +30,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'id_mentor',
       as: 'Mentor'
     })
+    Mentoring.belongsTo(models.User, {
+      foreignKey: 'id_user',
+      as: 'User'
+    })
   }
   return Mentoring;
 };

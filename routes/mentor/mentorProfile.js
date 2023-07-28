@@ -7,3 +7,6 @@ const MentorProfileController = require('../../controllers/mentor/MentorProfileC
 
 router.get('/get', MentorProfileController.getProfile)
 router.get('/get/schedule', MentorProfileController.getProfile)
+router.get('/get/book/now', MentorProfileController.getbookAll)
+router.get('/get/book/all', MentorProfileController.getbookAll)
+router.get('/get/book/history', MentorProfileController.getbookAll)
