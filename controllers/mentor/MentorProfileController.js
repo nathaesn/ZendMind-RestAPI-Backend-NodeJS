@@ -77,13 +77,16 @@ exports.getbookAll= async(req, res, next) => {
                     if (!tokendb) {
                       return responApi.v2respon400(req, res, "Invalid Token");
                     } 
+
+                    const todayDate = new Date().toISOString().split('T')[0];
             
                     mMentoring.findAll({
                         where: {
                             id_user: decoded.user.id,
-                            fee: {
-                                [Op.lte]: 0,
-                              },
+                            date_mentoring: {
+                                [Op.gte]: todayDate
+                            },
+                            status:'Pending'
                         },
                         include:[
                             {
@@ -111,14 +114,14 @@ exports.getbookAll= async(req, res, next) => {
                             return responApi.v2respon400(req, res, "Empty Data");
                         }
                       })
-                      .catch((error) => {
-                        return responApi.v2respon400(req, res, "Failed to make a request");
-                      });
+                    //   .catch((error) => {
+                    //     return responApi.v2respon400(req, res, "Failed to make a request");
+                    //   });
             
                     
                 // } catch (error) {
                 //     return responApi.v2respon400(req, res, 'Internal Server Error');
                 // }
             
-            }        
+}        
         
