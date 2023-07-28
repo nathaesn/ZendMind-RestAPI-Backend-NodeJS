@@ -1,1 +1,133 @@
-<h1>AHlo</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dokumentasi API - Contoh API</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1, h2, h3 {
+      margin-top: 30px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+    }
+
+    h2 {
+      font-size: 2rem;
+    }
+
+    h3 {
+      font-size: 1.7rem;
+    }
+
+    p {
+      margin-bottom: 10px;
+    }
+
+    .menu {
+      margin-bottom: 30px;
+    }
+
+    .menu a {
+      margin-right: 20px;
+      text-decoration: none;
+      color: #007bff;
+      font-weight: bold;
+    }
+
+    .menu a:hover {
+      text-decoration: underline;
+    }
+
+    .endpoint {
+      margin-top: 40px;
+      border: 1px solid #ddd;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+
+    .method {
+      font-weight: bold;
+      color: #007bff;
+    }
+
+    .url {
+      font-family: 'Courier New', Courier, monospace;
+      margin-top: 10px;
+      margin-bottom: 15px;
+    }
+
+    .description {
+      font-style: italic;
+      color: #666;
+    }
+
+    footer {
+      margin-top: 50px;
+      text-align: center;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <h1>Dokumentasi API</h1>
+
+  <div class="menu">
+    <a href="#admin">API Admin</a>
+    <a href="#user">API User</a>
+  </div>
+
+  <h2 id="admin">API Admin</h2>
+
+  <div class="endpoint">
+    <h3 class="method">GET</h3>
+    <p class="url">/api/admin/users</p>
+    <p class="description">Mengambil daftar pengguna oleh admin.</p>
+  </div>
+
+  <div class="endpoint">
+    <h3 class="method">POST</h3>
+    <p class="url">/api/admin/users</p>
+    <p class="description">Menambahkan pengguna baru oleh admin.</p>
+  </div>
+
+  <div class="endpoint">
+    <h3 class="method">PUT</h3>
+    <p class="url">/api/admin/users/{id}</p>
+    <p class="description">Mengubah data pengguna oleh admin berdasarkan ID.</p>
+  </div>
+
+  <div class="endpoint">
+    <h3 class="method">DELETE</h3>
+    <p class="url">/api/admin/users/{id}</p>
+    <p class="description">Menghapus pengguna oleh admin berdasarkan ID.</p>
+  </div>
+
+  <h2 id="user">API User</h2>
+
+  <div class="endpoint">
+    <h3 class="method">GET</h3>
+    <p class="url">/api/users</p>
+    <p class="description">Mengambil daftar pengguna.</p>
+  </div>
+
+  <div class="endpoint">
+    <h3 class="method">GET</h3>
+    <p class="url">/api/users/{id}</p>
+    <p class="description">Mengambil detail pengguna berdasarkan ID.</p>
+  </div>
+
+  <footer>
+    <p>&copy; 2023 Contoh API - All rights reserved.</p>
+  </footer>
+</body>
+</html>
