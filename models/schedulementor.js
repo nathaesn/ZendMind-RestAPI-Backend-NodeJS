@@ -24,6 +24,10 @@ module.exports = (sequelize, DataTypes) => {
     ScheduleMentor.belongsTo(models.Mentor, {
       foreignKey: 'id_mentor',
       as: 'ScheduleMentor'
+    }),
+    ScheduleMentor.hasMany(models.TimeSchedule, {
+      foreignKey: 'id_schedule',
+      as: 'TimeSchedule'
     })
   }
   return ScheduleMentor;

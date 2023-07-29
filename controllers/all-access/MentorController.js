@@ -13,6 +13,7 @@ const fs = require('fs');
 const path = require('path');
 const { Op } = require('sequelize');
 const { use } = require('../../routes/all-access/auth');
+const moment = require('moment-timezone');
 
 
 exports.allMentor = async(req, res, next) => {
@@ -117,6 +118,8 @@ exports.detailMentor= async(req, res, next) => {
  
     try {
 
+        const todayDate = moment().tz('Asia/Jakarta').format('YYYY-MM-DD');
+
         mMentor.findOne({
             where: {
                 id: req.params.idMentor
@@ -130,6 +133,12 @@ exports.detailMentor= async(req, res, next) => {
                 {
                     model: models.ScheduleMentor,
                     as: 'ScheduleMentor',
+                    where:{
+                        date: {
+                            [Op.gte]: todayDate
+                        },
+                    },
+                    required: false,
                 },
             ],
           }).then((user) => {
@@ -345,6 +354,107 @@ exports.createbook= async(req, res, next) => {
             return responApi.v2respon200(req, res, "berhasil melakukan booking");
         }
       });
+        
+    // } catch (error) {
+    //     return responApi.v2respon400(req, res, 'Internal Server Error');
+    // }
+
+}
+
+
+
+exports.cancelBook= async(req, res, next) => {
+    
+
+        await mMentoring.update(
+            { status: 'Cancelled' },
+            {
+              where: {
+                id: req.params.idBook,
+              }
+            })
+
+        return responApi.v2respon200(req, res, "berhasil merubah fee");
+       
+      
+        
+    // } catch (error) {
+    //     return responApi.v2respon400(req, res, 'Internal Server Error');
+    // }
+
+}
+exports.finishBook= async(req, res, next) => {
+    
+
+        await mMentoring.update(
+            { status: 'Finished' },
+            {
+              where: {
+                id: req.params.idBook,
+              }
+            })
+
+        return responApi.v2respon200(req, res, "berhasil merubah fee");
+       
+      
+        
+    // } catch (error) {
+    //     return responApi.v2respon400(req, res, 'Internal Server Error');
+    // }
+
+}
+
+exports.reschedule= async(req, res, next) => {
+    
+    const { id_mentoring, new_date, new_time } = req.body;
+       
+    const dataMentoring =await  mMentoring.findOne({
+        where: {
+            id: id_mentoring
+        },
+        include:[
+            {
+                model: models.User,
+                as: 'User',
+                attributes: { exclude: ['password'] },
+            },
+            {
+                model: models.Mentor,
+                as: 'Mentor',
+                include:[
+                    {
+                        model: models.User,
+                        as: 'User',
+                        attributes: { exclude: ['password'] },
+                    }
+                ],
+            },
+           
+        ],
+    })
+
+    console.log("LOG"+dataMentoring.User.email)
+
+    const sendMail = {
+        from: process.env.EMAIL,
+        to: dataMentoring.User.email,
+        subject: 'Permintaan Reschedule Mentoring',
+        html: `
+        <p>permintaan untuk merubah jadwal mentoring pada ${dataMentoring.date_mentoring} pada jam ${dataMentoring.time_mentoring} menjadi ${new_date} pada jam ${new_time} :</p>\n
+        <a href="${process.env.APP_URL}mentoring/reschedule/approved/${id_mentoring}/${new_date}/${new_time}">Terima</a>\n
+        <a href="${process.env.APP_URL}mentoring/reschedule/notapproved/${id_mentoring}/${new_date}/${new_time}">Jangan Terima</a>
+        `
+    };
+     await transporter.sendMail(sendMail, (error, info) => {
+        if (error) {
+            return responApi.v2respon200(req, res, "Failed to send reschedule verification");
+        } else {
+            return responApi.v2respon200(req, res, "Successfully to send reschedule verification");
+        }
+    });
+
+       
+      
         
     // } catch (error) {
     //     return responApi.v2respon400(req, res, 'Internal Server Error');
