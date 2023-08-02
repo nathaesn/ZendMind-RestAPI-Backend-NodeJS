@@ -20,7 +20,9 @@ module.exports = (sequelize, DataTypes) => {
     date_mentoring: DataTypes.DATEONLY,
     time_mentoring: DataTypes.TIME,
     notes: DataTypes.TEXT,
-    status: DataTypes.ENUM('Pending','Finished','Cancelled')
+    urlTrx: DataTypes.TEXT,
+    idTRx: DataTypes.STRING,
+    status: DataTypes.ENUM('WaitingP', 'PCancelled','PFailed','Pending','Finished','Cancelled')
   }, {
     sequelize,
     modelName: 'Mentoring',

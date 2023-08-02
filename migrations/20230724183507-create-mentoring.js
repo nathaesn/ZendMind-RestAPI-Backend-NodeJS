@@ -27,8 +27,14 @@ module.exports = {
       notes: {
         type: Sequelize.TEXT
       },
+      urlTrx: {
+        type: Sequelize.TEXT
+      },
+      idTRx: {
+        type: Sequelize.TEXT
+      },
       status: {
-        type: Sequelize.ENUM('Pending','Finished','Cancelled')
+        type: Sequelize.ENUM('WaitingP', 'PCancelled','PFailed','Pending','Finished','Cancelled')
       },
       createdAt: {
         allowNull: false,

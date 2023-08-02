@@ -10,7 +10,7 @@ async function createPayment(req, res) {
     const createPaymentResponse = await xendit.Invoice.create({
       externalID: '88753', // ID unik untuk pembayaran
       amount,
-      payerEmail: 'customer@example.com',
+      payerEmail: 'qilaadikara@gmail.com',
       description: 'Pembayaran Barang',
       successRedirectUrl: process.env.APP_URL+"payment/success",
       failureRedirectUrl: process.env.APP_URL+"payment/failure"
