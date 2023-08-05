@@ -24,7 +24,7 @@ module.exports = {
       
       const decoded = jwt.verify(token, process.env.TOKEN_KEY);
 
-      const { month, year, mood } = req.body;
+      const { month, year, mood , day} = req.body;
       const startDate = `${year}-${month}-01`;
       const lastDayOfMonth = new Date(year, month, 0).getDate();
       const endDate = `${year}-${month}-${lastDayOfMonth}`;
@@ -33,9 +33,7 @@ module.exports = {
         order: [['createdAt', 'ASC']],
         where: {
           idUser: decoded.user.id,
-          monthYear: {
-            [Op.between]: [startDate, endDate],
-          },
+          monthYear:`${year}-${month}-${day}`,
         },
       
       }).then(async count =>{
@@ -48,6 +46,7 @@ module.exports = {
       
           await Mood.create({ 
             idUser: decoded.user.id,
+            monthYear:`${year}-${month}-${day}`,
             mood: mood
            });
       

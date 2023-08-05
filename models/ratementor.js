@@ -22,5 +22,11 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'RateMentor',
   });
+  RateMentor.associate = function (models) {
+    RateMentor.belongsTo(models.User, {
+      foreignKey: 'id_user',
+      as: 'User'
+    })
+  }
   return RateMentor;
 };

@@ -34,6 +34,10 @@ module.exports = (sequelize, DataTypes) => {
     Mentor.hasMany(models.ScheduleMentor, {
       foreignKey: 'id_mentor',
       as: 'ScheduleMentor'
+    }),
+    Mentor.hasMany(models.RateMentor, {
+      foreignKey: 'id_mentor',
+      as: 'RateMentor'
     })
   }
   return Mentor;

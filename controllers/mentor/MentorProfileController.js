@@ -3,6 +3,7 @@ const mUser = models.User
 const mMentor = models.Mentor
 const mTimeSchedule = models.TimeSchedule
 const mSchedule = models.ScheduleMentor
+const mRateMentor = models.RateMentor
 const mMentoring = models.Mentoring
 const tokenModels = models.Token
 const bcryptjs = require('bcryptjs')
@@ -11,7 +12,7 @@ const responApi = require('../apirespon');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
 const path = require('path');
-const { Op } = require('sequelize');
+const { Sequelize,Op } = require('sequelize');
 const { use } = require('../../routes/all-access/auth');
 const moment = require('moment-timezone');
 
@@ -494,5 +495,131 @@ exports.deleteTimesch= async(req, res, next) => {
     }
 
     return responApi.v2respon200(req, res, "berhasil menambah");
+
+}
+exports.earningbalance= async(req, res, next) => {
+    let token = req.body.token || req.query.token || req.headers["authorization"];
+    // const {name} = req.body
+    if (!token) {
+        return res.status(403).json("A token is required for authentication");
+    }
+    token = token.replace("Bearer ", "");
+ 
+    // try {
+        const decoded = jwt.verify(token, process.env.TOKEN_KEY);
+
+        const tokendb = await tokenModels.findOne({ where: { token: token } });
+        if (!tokendb) {
+          return responApi.v2respon400(req, res, "Invalid Token");
+        } 
+    
+
+        const mentordata = await mMentor.findOne({
+            where: {
+                idUser: decoded.user.id
+            }
+        })
+
+
+        mMentoring.findAll({
+            where: {
+                id_mentor: mentordata["id"],
+                [Op.or]: [
+                    { status: 'Finished' },
+                  ],
+            },
+          }).then( async(user) => {
+            if (user) {
+                
+                const customResponse = {
+                    earningData: user,
+                    earningCount: mentordata["incomeNow"],
+                }
+                return responApi.v2respon200(req, res, customResponse);
+            } else {
+                return responApi.v2respon400(req, res, "Empty Data");
+            }
+          })
+        //   .catch((error) => {
+        //     return responApi.v2respon400(req, res, "Failed to make a request");
+        //   });
+
+        
+    // } catch (error) {
+    //     return responApi.v2respon400(req, res, 'Internal Server Error');
+    // }
+
+}
+exports.rate= async(req, res, next) => {
+    let token = req.body.token || req.query.token || req.headers["authorization"];
+    // const {name} = req.body
+    if (!token) {
+        return res.status(403).json("A token is required for authentication");
+    }
+    token = token.replace("Bearer ", "");
+ 
+    // try {
+        const decoded = jwt.verify(token, process.env.TOKEN_KEY);
+
+        const tokendb = await tokenModels.findOne({ where: { token: token } });
+        if (!tokendb) {
+          return responApi.v2respon400(req, res, "Invalid Token");
+        } 
+
+        const mentordata = await mMentor.findOne({
+            where: {
+                idUser: decoded.user.id
+            },
+            include:[
+                {
+                    model: models.User,
+                    as: 'User',
+                    attributes: { exclude: ['password'] },
+                },
+            ],
+        })
+
+
+        mRateMentor.findAll({
+            where: {
+                id_mentor: mentordata["id"],  
+                
+            },
+            include:[
+                {
+                    model: models.User,
+                    as: 'User',
+                    attributes: { exclude: ['password'] },
+                },
+            ],
+          }).then( async(user) => {
+            if (user) {
+                const rateData = await mRateMentor.findOne({
+                    attributes: [
+                        [Sequelize.fn('AVG', Sequelize.col('rate')), 'averageRate']
+                      ],
+                    where: {
+                        id_mentor:  mentordata["id"],  
+                      },
+                })
+
+                const averageRate = rateData.dataValues.averageRate !== null ? Number(rateData.dataValues.averageRate) : 0.0;
+                const customResponse = {
+                    review: user,
+                    averageRate: parseFloat(averageRate.toFixed(1)),
+                }
+                return responApi.v2respon200(req, res, customResponse);
+            } else {
+                return responApi.v2respon400(req, res, "Empty Data");
+            }
+          })
+        //   .catch((error) => {
+        //     return responApi.v2respon400(req, res, "Failed to make a request");
+        //   });
+
+        
+    // } catch (error) {
+    //     return responApi.v2respon400(req, res, 'Internal Server Error');
+    // }
 
 }

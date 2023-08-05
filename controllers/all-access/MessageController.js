@@ -19,8 +19,6 @@ exports.getListRoom = async(req, res) => {
 
   // try {
     const decoded = jwt.verify(token, process.env.TOKEN_KEY);
-    const io = req.app.get('io');
-    const { message, roomID, id_SecondUser } = req.body;
 
     const tokendb = await tokenModels.findOne({ where: { token: token } });
     if (!tokendb) {
@@ -29,6 +27,8 @@ exports.getListRoom = async(req, res) => {
 
   let messages = await listroom.findAll({
     where: { id_user: decoded.user.id},
+    order: [
+      ['updatedAt', 'DESC'], ],
     include:[
       {
           model: models.User,
@@ -41,6 +41,7 @@ exports.getListRoom = async(req, res) => {
       },
      
   ],
+  
   });
   return responApi.v2respon200(req, res, messages);
 }

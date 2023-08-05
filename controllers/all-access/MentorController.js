@@ -4,6 +4,7 @@ const mMentor = models.Mentor
 const mTimeSchedule = models.TimeSchedule
 const mSchedule = models.ScheduleMentor
 const mMentoring = models.Mentoring
+const mRateMentor = models.RateMentor
 const tokenModels = models.Token
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
@@ -116,8 +117,8 @@ exports.allMentorFree= async(req, res, next) => {
 }
 exports.detailMentor= async(req, res, next) => {
  
-    try {
-
+    // try {
+        
         const todayDate = moment().tz('Asia/Jakarta').format('YYYY-MM-DD');
 
         mMentor.findOne({
@@ -129,23 +130,54 @@ exports.detailMentor= async(req, res, next) => {
                     model: models.User,
                     as: 'User',
                     attributes: { exclude: ['password'] },
-                }
+                },
             ],
-          }).then((user) => {
+          }).then(async (user) => {
             if (user) {
-                return responApi.v2respon200(req, res, user);
+                const rateData = await mRateMentor.findOne({
+                    attributes: [
+                        [Sequelize.fn('AVG', Sequelize.col('rate')), 'averageRate']
+                      ],
+                    where: {
+                        id_mentor: req.params.idMentor,   
+                      },
+                })
+        
+                const rateCount = await mRateMentor.count({
+                    where: {
+                      id_mentor: req.params.idMentor,
+                    },
+                  });
+
+                const patientCounts = await mMentoring.count({ 
+                    where: {
+                      id_mentor: req.params.idMentor,
+                      status:"Finished"
+                    },
+                  });
+
+                  const averageRate = rateData.dataValues.averageRate !== null ? Number(rateData.dataValues.averageRate) : 0.0;
+
+
+                const customResponse = {
+                    mentorData: user,
+                    patientCount: patientCounts,
+                    ratingCount: rateCount,
+                    averageRate: parseFloat(averageRate.toFixed(1)),
+                }
+                return responApi.v2respon200(req, res, customResponse);
             } else {
                 return responApi.v2respon400(req, res, "Empty User");
             }
           })
-          .catch((error) => {
-            return responApi.v2respon400(req, res, "Failed to make a request");
-          });
+        //   .catch((error) => {
+        //     return responApi.v2respon400(req, res, "Failed to make a request");
+        //   });
 
         
-    } catch (error) {
-        return responApi.v2respon400(req, res, 'Internal Server Error');
-    }
+    // } catch (error) {
+    //     return responApi.v2respon400(req, res, 'Internal Server Error');
+    // }
 
 }
 
@@ -238,37 +270,74 @@ exports.getbook= async(req, res, next) => {
           return responApi.v2respon400(req, res, "Invalid Token");
         } 
 
-        mMentoring.findAll({
-            where: {
-                id_user: decoded.user.id,
-                fee: {
-                    [Op.lte]: 0,
-                  },
-            },
-            include:[
-                {
-                    model: models.Mentor,
-                    as: 'Mentor',
-                    include:[
-                        {
-                            model: models.User,
-                            as: 'User',
-                            attributes: { exclude: ['password'] },
-                        }
-                    ],
+        if(req.params.status == "Free"){
+
+            mMentoring.findAll({
+                where: {
+                    id_user: decoded.user.id,
+                    idTrx:"",
+                    status:"Finished"
                 },
-               
-            ],
-          }).then((user) => {
-            if (user) {
-                return responApi.v2respon200(req, res, user);
-            } else {
-                return responApi.v2respon400(req, res, "Empty Data");
-            }
-          })
-          .catch((error) => {
-            return responApi.v2respon400(req, res, "Failed to make a request");
-          });
+                include:[
+                    {
+                        model: models.Mentor,
+                        as: 'Mentor',
+                        include:[
+                            {
+                                model: models.User,
+                                as: 'User',
+                                attributes: { exclude: ['password'] },
+                            }
+                        ],
+                    },
+                   
+                ],
+              }).then((user) => {
+                if (user) {
+                    return responApi.v2respon200(req, res, user);
+                } else {
+                    return responApi.v2respon400(req, res, "Empty Data");
+                }
+              })
+              .catch((error) => {
+                return responApi.v2respon400(req, res, "Failed to make a request");
+              });
+        } else{
+            mMentoring.findAll({
+                where: {
+                    id_user: decoded.user.id,
+                    // idTrx:"",
+                    idTrx: {
+                        [Op.not]: "",
+                    },
+                    status:"Finished"
+                },
+                include:[
+                    {
+                        model: models.Mentor,
+                        as: 'Mentor',
+                        include:[
+                            {
+                                model: models.User,
+                                as: 'User',
+                                attributes: { exclude: ['password'] },
+                            }
+                        ],
+                    },
+                   
+                ],
+              }).then((user) => {
+                if (user) {
+                    return responApi.v2respon200(req, res, user);
+                } else {
+                    return responApi.v2respon400(req, res, "Empty Data");
+                }
+              })
+              .catch((error) => {
+                return responApi.v2respon400(req, res, "Failed to make a request");
+              });
+        }
+
 
         
     } catch (error) {
@@ -332,6 +401,149 @@ exports.getbookOngoing= async(req, res, next) => {
                 return responApi.v2respon400(req, res, "Empty Data");
             }
           })
+        //   .catch((error) => {
+        //     return responApi.v2respon400(req, res, "Failed to make a request");
+        //   });
+
+        
+    // } catch (error) {
+    //     return responApi.v2respon400(req, res, 'Internal Server Error');
+    // }
+
+}       
+exports.getbookOntrx= async(req, res, next) => {
+ 
+    let token = req.body.token || req.query.token || req.headers["authorization"];
+    // const {name} = req.body
+    if (!token) {
+        return res.status(403).json("A token is required for authentication");
+    }
+    token = token.replace("Bearer ", "");
+ 
+    // try {
+        const decoded = jwt.verify(token, process.env.TOKEN_KEY);
+
+        const tokendb = await tokenModels.findOne({ where: { token: token } });
+        if (!tokendb) {
+          return responApi.v2respon400(req, res, "Invalid Token");
+        } 
+
+        const todayDate = moment().tz('Asia/Jakarta').format('YYYY-MM-DD');
+
+     
+        if(req.params.status == "WaitingP"){
+            mMentoring.findAll({
+                where: {
+                    id_user: decoded.user.id,
+                    date_mentoring: {
+                        [Op.gte]: todayDate
+                    },
+                    status:req.params.status
+                },
+                include:[
+                    {
+                        model: models.User,
+                        as: 'User',
+                        attributes: { exclude: ['password'] },
+                    },
+                    {
+                        model: models.Mentor,
+                        as: 'Mentor',
+                        include:[
+                            {
+                                model: models.User,
+                                as: 'User',
+                                attributes: { exclude: ['password'] },
+                            }
+                        ],
+                    },
+                   
+                ],
+              }).then((user) => {
+                if (user) {
+                    return responApi.v2respon200(req, res, user);
+                } else {
+                    return responApi.v2respon400(req, res, "Empty Data");
+                }
+              })
+        } else if(req.params.status == "finishP"){
+            mMentoring.findAll({
+                where: {
+                    id_user: decoded.user.id,
+                    date_mentoring: {
+                        [Op.gte]: todayDate
+                    },
+                    status: {
+                        [Op.in]: ['Pending', 'Finished', 'Cancelled']
+                      },
+                    idTRx: {
+                        [Op.not]: ''
+                      },
+                    urlTrx: {
+                        [Op.not]: ''
+                      }
+                },
+                include:[
+                    {
+                        model: models.User,
+                        as: 'User',
+                        attributes: { exclude: ['password'] },
+                    },
+                    {
+                        model: models.Mentor,
+                        as: 'Mentor',
+                        include:[
+                            {
+                                model: models.User,
+                                as: 'User',
+                                attributes: { exclude: ['password'] },
+                            }
+                        ],
+                    },
+                   
+                ],
+              }).then((user) => {
+                if (user) {
+                    return responApi.v2respon200(req, res, user);
+                } else {
+                    return responApi.v2respon400(req, res, "Empty Data");
+                }
+              })
+        } else{
+            mMentoring.findAll({
+                where: {
+                    id_user: decoded.user.id,
+                    status:req.params.status
+                },
+                include:[
+                    {
+                        model: models.User,
+                        as: 'User',
+                        attributes: { exclude: ['password'] },
+                    },
+                    {
+                        model: models.Mentor,
+                        as: 'Mentor',
+                        include:[
+                            {
+                                model: models.User,
+                                as: 'User',
+                                attributes: { exclude: ['password'] },
+                            }
+                        ],
+                    },
+                   
+                ],
+              }).then((user) => {
+                if (user) {
+                    return responApi.v2respon200(req, res, user);
+                } else {
+                    return responApi.v2respon400(req, res, "Empty Data");
+                }
+              })
+        }
+
+      
         //   .catch((error) => {
         //     return responApi.v2respon400(req, res, "Failed to make a request");
         //   });
@@ -523,8 +735,9 @@ const createPaymentMentoringXendit = async (req,res, userdecoded,fee, mentor,dat
         amount: fee,
         payerEmail: userdecoded.email,
         description: 'Pembayaran Mentoring',
-        // successRedirectUrl: 'successUrl',
-        // failureRedirectUrl: 'failureUrl',
+        successRedirectUrl: 'https://apizendmind.igniteteam.id/',
+        success_redirect_url: "https://apizendmind.igniteteam.id/",
+        failureRedirectUrl: 'https://apizendmind.igniteteam.id/',
       });
   
       const paymentUrl = createPaymentResponse.invoice_url;
@@ -602,6 +815,46 @@ exports.cancelBook= async(req, res, next) => {
 
         await mMentoring.update(
             { status: 'Cancelled' },
+            {
+              where: {
+                id: req.params.idBook,
+              }
+            })
+
+        return responApi.v2respon200(req, res, "berhasil merubah fee");
+       
+      
+        
+    // } catch (error) {
+    //     return responApi.v2respon400(req, res, 'Internal Server Error');
+    // }
+
+}
+exports.finishBook= async(req, res, next) => {
+    
+
+        await mMentoring.update(
+            { status: 'Finished' },
+            {
+              where: {
+                id: req.params.idBook,
+              }
+            })
+
+        return responApi.v2respon200(req, res, "berhasil merubah fee");
+       
+      
+        
+    // } catch (error) {
+    //     return responApi.v2respon400(req, res, 'Internal Server Error');
+    // }
+
+}
+exports.cancelBooktrx= async(req, res, next) => {
+    
+
+        await mMentoring.update(
+            { status: 'PCancelled' },
             {
               where: {
                 id: req.params.idBook,
