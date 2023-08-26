@@ -9,6 +9,13 @@ const server = http.createServer(app);
 const io = socketIO(server);
 const path = require('path');
 const cors = require('cors');
+const firebaseadmin = require('firebase-admin');
+const serviceAccount = require('./firebase-zendmind-ServiceAccountKey.json');
+
+firebaseadmin.initializeApp({
+  credential: firebaseadmin.credential.cert(serviceAccount),
+});
+
 
 
 app.use(bodyParser.json());
@@ -34,6 +41,7 @@ const authRoute = require('./routes/all-access/auth')
 const articleRoutes = require('./routes/all-access/ArticleRoutes');
 const notificationRoutes = require('./routes/all-access/NotificationRoutes');
 const messageRoutes = require('./routes/all-access/MessageRoutes');
+const adminRoutes = require('./routes/admin/admin');
 const mentorRoutes = require('./routes/all-access/mentor');
 const mentorProfileRoutes = require('./routes/mentor/mentorProfile');
 const handleUserAdmin = require('./routes/admin/mentorHandle');
@@ -71,10 +79,11 @@ app.use('/api/mentor', mentorRoutes);
 app.use('/api/mentor/profile', mentorProfileRoutes);
 
 //Make Routes Admin For Handle User
-app.use('/api/admin/user', messageRoutes);
+// app.use('/api/admin/user', messageRoutes);
+app.use('/api/admin', adminRoutes);
 
 //Make Routes Admin For Handle Mentor
-app.use('/api/admin/mentor', messageRoutes);
+// app.use('/api/admin/mentor', messageRoutes);
 
 
 const multer  = require('multer'); 
@@ -91,6 +100,8 @@ const storage = multer.diskStorage({
       })
     }
 })
+
+
 
 io.on('connect', (socket) => {
   console.log('a user connected');

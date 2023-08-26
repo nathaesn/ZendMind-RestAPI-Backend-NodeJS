@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken')
 const responApi = require('../apirespon');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
+const mTokenDevice = models.TokenDevice;
 const path = require('path');
 
 const transporter = nodemailer.createTransport({
@@ -85,6 +86,12 @@ exports.login = async(req, res) => {
                     await tokenModels.create(
                         {
                             token: token,
+                        }
+                    )
+                    await mTokenDevice.create(
+                        {
+                            id_user: user.id,
+                            token: req.body.tokenDvc
                         }
                     )
     
@@ -327,11 +334,17 @@ exports.logOut = async(req, res, next) => {
     }
     token = token.replace("Bearer ", "");
     try {
-
+        const decoded = jwt.verify(token, process.env.TOKEN_KEY);
         const tokendb = await tokenModels.findOne({ where: { token: token } });
         if (!tokendb) {
             return responApi.v2respon400(req, res, "Invalid Token");
         } else{
+            await mTokenDevice.destroy({
+                where: {
+                    id_user: decoded.user.id,
+                    token: req.params.tokenDvc
+                }
+            })
             tokenModels.destroy({
                 where: {
                   token: token,

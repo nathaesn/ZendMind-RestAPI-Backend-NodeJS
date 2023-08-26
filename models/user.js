@@ -33,6 +33,10 @@ module.exports = (sequelize, DataTypes) => {
     User.hasOne(models.Mentor, {
       foreignKey: 'idUser',
       as: 'MentorProfile'
+    }),
+    User.hasMany(models.RekeningMentor, {
+      foreignKey: 'id_user',
+      as: 'RekeningMentor'
     })
   }
   return User;

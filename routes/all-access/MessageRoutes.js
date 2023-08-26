@@ -11,6 +11,7 @@ router.post('/', messagesController.create);
 router.get('/chat/:roomID', messagesController.getAll);
 router.get('/listroom', messagesController.getListRoom);
 router.get('/ai', messagesController.createAi);
+router.get('/tez', messagesController.createAi);
 
 module.exports = router;
 

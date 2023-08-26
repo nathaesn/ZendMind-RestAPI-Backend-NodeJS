@@ -5,6 +5,8 @@ const mTimeSchedule = models.TimeSchedule
 const mSchedule = models.ScheduleMentor
 const mRateMentor = models.RateMentor
 const mMentoring = models.Mentoring
+const mSallaryMentor = models.SallaryMentor
+const mRekeningMentor = models.RekeningMentor
 const tokenModels = models.Token
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
@@ -520,26 +522,37 @@ exports.earningbalance= async(req, res, next) => {
             }
         })
 
-
-        mMentoring.findAll({
+        const totalFee = await mMentoring.sum('fee', {
             where: {
-                id_mentor: mentordata["id"],
-                [Op.or]: [
-                    { status: 'Finished' },
-                  ],
+              id_mentor: mentordata["id"],
+              status: 'Finished',
             },
-          }).then( async(user) => {
-            if (user) {
-                
-                const customResponse = {
-                    earningData: user,
-                    earningCount: mentordata["incomeNow"],
-                }
-                return responApi.v2respon200(req, res, customResponse);
-            } else {
-                return responApi.v2respon400(req, res, "Empty Data");
-            }
-          })
+          });
+        const totalrec = await mSallaryMentor.sum('total', {
+            where: {
+              id_user: decoded.user.id,
+            },
+          });
+        const recdata = await mSallaryMentor.findAll( {
+            where: {
+              id_user: decoded.user.id,
+            },
+          });
+        const rekening = await mRekeningMentor.findAll( {
+            where: {
+              id_user: decoded.user.id,
+            },
+          });
+
+
+        const customResponse = {
+            earningAll: totalFee,
+            earningRec: totalrec,
+            earningRecData: recdata,
+            earningNow: mentordata["incomeNow"],
+            rekening: rekening,
+        }
+        return responApi.v2respon200(req, res, customResponse);
         //   .catch((error) => {
         //     return responApi.v2respon400(req, res, "Failed to make a request");
         //   });
